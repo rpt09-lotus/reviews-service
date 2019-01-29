@@ -13,17 +13,11 @@ const dateGen = () => {
   return dateStr += day + '/' + month + '/' + year
 }
 
-const seedDB = (data) => {
+const genBatch = () => {
   let trailId = 0;
   let dbData = '';
 
-  const appendToResults = fs.createWriteStream('results.csv', {
-    flags: 'a'
-  });
-
-  appendToResults.write('user_id, trail_id, rating, description, date, act_id\n');
-  
-  for (var i = 0; i < 10000000; i++) {
+  for (var i = 0; i < 10000; i++) {
     trailId++;
     for (var j = 0; j < (Math.random() * (20 - 3) + 3); j++) {
       let date = dateGen();
@@ -35,7 +29,19 @@ const seedDB = (data) => {
       dbData += `${userId},${trailId},${rating},${review},${date},${actId}\n`;
     }
   }
-  appendToResults.write(dbData);
+  return dbData;
 }
 
-seedDB(data);
+const appendToResults = fs.createWriteStream('results.csv', {
+  flags: 'a'
+});
+
+appendToResults.write('user_id, trail_id, rating, description, date, act_id\n');
+
+const seedDB = () => {
+  for (let i = 0; i < 1000; i++) {
+    appendToResults.write(genBatch());
+  }
+}
+
+seedDB();
